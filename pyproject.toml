@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "cloudstorage"
+version = "0.1.0"
+description = ""
+authors = ["samypushisty <pomidorik228@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.10.5"
+pydantic-settings = "^2.7.1"
+redis = "^5.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
