@@ -14,5 +14,3 @@ settings = Settings()
 # Формирование URL для подключения к Redis через SSL
 redis_url = f"rediss://:{settings.REDIS_PASSWORD}@{settings.REDIS_HOST}:{settings.REDIS_PORT}/0"
 
-# Опции для работы с SSL, отключаем проверку сертификата (подходит для отладки)
-ssl_options = {"ssl_cert_reqs": ssl.CERT_NONE}
