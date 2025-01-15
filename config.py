@@ -1,8 +1,8 @@
-from celery import Celery
 import os
 from pydantic_settings import BaseSettings
 from pydantic import BaseModel
 import redis
+
 
 class RunConfig(BaseModel):
     host: str = '0.0.0.0'

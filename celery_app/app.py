@@ -4,6 +4,7 @@ from config import  settings,redis_url
 
 celery_app = Celery(
     "celery_worker",  # Имя приложения Celery
+    broker_connection_retry_on_startup = True,
     broker=redis_url,  # URL брокера задач (Redis)
 )
 
@@ -15,7 +16,6 @@ celery_app = Celery(
 )
 def delete_file_scheduled(self, file_id, dell_id):
     try:
-        print("vlad")
         response = requests.delete(f"{settings.BASE_URL}/delete/{file_id}/{dell_id}")
         response.raise_for_status()
         return response.status_code
