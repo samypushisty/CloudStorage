@@ -22,3 +22,36 @@ This application serves as a cloud storage solution developed for educational pu
 - **Containerization**: Docker Compose
 
 ## Installation
+
+Follow these steps to install and run the Cloud Storage application on your local machine.
+
+### Prerequisites
+
+Make sure you have the following tools installed:
+
+- Python 3.12.3
+- Docker
+- Docker Compose
+  
+### Installation Steps
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/samypushisty/CloudStorage.git
+   cd CloudStorage
+2. **Installing dependencies**
+
+   ```bash
+    pip install -r requirements.txt
+3. **Create redis container**
+
+   ```bash
+    docker-compose up -d
+4. **Start celery app**
+
+   ```bash
+    celery -A celery_app.app worker --loglevel=INFO  -P solo
+5. **Start main app**
+
+   start main.py
