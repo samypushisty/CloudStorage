@@ -14,9 +14,18 @@ main_app = FastAPI(
     title="Trading App"
 )
 
+# Функция get_count_files, которая асинхронно отправляет количество файлов
+@main_app.get("/file/all")
+async def get_count_files():
+
+    # Получение пути к директории для загрузки файлов
+    upload_dir = settings.UPLOAD_DIR
+
+    return len(os.listdir(upload_dir))
+
 
 # Функция upload_file, которая асинхронно загружает файл
-@main_app.post("/api/upload/")
+@main_app.post("/file")
 async def upload_file(file: UploadFile, expiration_minutes: int = Form(...)):
     try:
 
@@ -81,7 +90,7 @@ async def upload_file(file: UploadFile, expiration_minutes: int = Form(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка загрузки файла: {str(e)}")
 
-@main_app.delete("/delete/{file_id}/{dell_id}")
+@main_app.delete("/file/{file_id}/{dell_id}")
 async def delete_file(file_id: str, dell_id: str):
 
     # Полчение информации из redis
@@ -112,7 +121,7 @@ async def delete_file(file_id: str, dell_id: str):
         print(f"Error deleting file {file_path}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Ошибка удаления файла: {str(e)}")
 
-@main_app.get("/download/")
+@main_app.get("/file")
 async def download_file(file_id: str):
     # Путь к файлу на сервере
     redis_key = f"file:{file_id}"
