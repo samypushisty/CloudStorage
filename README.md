@@ -10,7 +10,7 @@ This application serves as a cloud storage solution developed for educational pu
 - **File Download**: Users can easily download their uploaded files.
 - **File Deletion**: Users have the option to delete files manually.
 - **Unique Access via IDs**: Each file is associated with a unique ID assigned to the file, ensuring secure and individual access.
-- **Task Management with Celery**: Background tasks for file deletion are handled by Celery workers.
+- **Task Management with Celery**: Background tasks for file deletion and The periodic execution of tasks to monitor the number of files are handled by Celery workers.
 - **Redis for Task Storage**: Tasks are stored in Redis for convenience and efficiency, with Redis deployed using Docker Compose.
 - **FastAPI Backend**: The backend is developed using FastAPI.
 
@@ -50,8 +50,13 @@ Make sure you have the following tools installed:
     docker-compose up -d
 4. **Start celery app**
 
+    The separate execution of all tasks in different processes.
+
    ```bash
-    celery -A celery_app.app worker --loglevel=INFO  -P solo
-5. **Start main app**
+     celery -A celery_app.app worker --loglevel=INFO  -P solo
+     celery -A celery_app.app beat --loglevel=INFO
+     celery -A celery_app.app flower
+   
+6. **Start main app**
 
    start main.py
