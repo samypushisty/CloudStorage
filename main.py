@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
 from celery_app.app import delete_file_scheduled
-from config import settings, redis_client
+from config import settings, redis_client, session_getter
 from utils.random_string import generate_random_string
 
 main_app = FastAPI(
@@ -71,7 +71,7 @@ async def upload_file(file: UploadFile, expiration_minutes: int = Form(...)):
 
         # Сохранить метаданные в Redis
         redis_key = f"file:{file_id}"  # Уникальный ключ для файла
-        redis_client.hmset(redis_key, {"file_path": file_path,
+        await redis_client.hmset(redis_key, {"file_path": file_path,
                                        "dell_id": dell_id,
                                        "download_url": download_url,
                                        "expiration_time": int(expiration_time.timestamp()),
@@ -95,16 +95,16 @@ async def delete_file(file_id: str, dell_id: str):
 
     # Полчение информации из redis
     redis_key = f"file:{file_id}"
-    file_info = redis_client.hgetall(redis_key)
+    file_info = await redis_client.hgetall(redis_key)
 
     if not file_info:
         raise HTTPException(status_code=404, detail="Файл не найден")
     # Проверка ид удаления
-    dell_id_redis = file_info.get(b"dell_id").decode()
+    dell_id_redis = file_info.get("dell_id")
     if dell_id_redis != dell_id:
         raise HTTPException(status_code=403, detail="Не совпадает айди удаления с айди удаления файла")
 
-    file_path = file_info.get(b"file_path").decode()
+    file_path = file_info.get("file_path")
 
     # Удаление файла и очистка записи в Redis
     try:
@@ -114,7 +114,7 @@ async def delete_file(file_id: str, dell_id: str):
         else:
             print(f"Файл {file_path} не найден.")
 
-        redis_client.delete(redis_key)
+        await redis_client.delete(redis_key)
         return {"message": "Файл успешно удален и запись в Redis очищена!"}
 
     except OSError as e:
@@ -125,12 +125,12 @@ async def delete_file(file_id: str, dell_id: str):
 async def download_file(file_id: str):
     # Путь к файлу на сервере
     redis_key = f"file:{file_id}"
-    file_info = redis_client.hgetall(redis_key)
+    file_info = await redis_client.hgetall(redis_key)
 
     if not file_info:
         raise HTTPException(status_code=404, detail="Файл не найден")
 
-    file_path = file_info.get(b"file_path").decode()
+    file_path = file_info.get("file_path")
 
     return FileResponse(file_path, media_type='application/octet-stream')
 
